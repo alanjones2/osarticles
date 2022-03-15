@@ -30,9 +30,9 @@ plot the trend line on top of the scatter plot
 
         m = stats.linregress(x, y)
 
-        def f(x,m): return m.slope * x + m.intercept
+        t = [m.slope * i + m.intercept for i in x]
 
-        july.insert(len(july.columns),'trend',[f(x,m) for x in july['Year']])
+        july.insert(len(july.columns),'trend',t)
 
         ax = july.plot.scatter(x='Year',y='Tmax')
         july.plot.line(x='Year',y='trend', color='red', ax=ax, figsize = (16,8))
@@ -49,7 +49,9 @@ now can clearly see an upwards trend
 get oecd data and filter it to get gpd volume data fro the G7
 
         gdpdata = pd.read_csv('https://github.com/alanjones2/stGDPG7/raw/main/QNA_26022022111050612.csv')
-        G7data = gdpdata[(gdpdata['MEASURE']=='VIXOBSA') & (gdpdata['Country']=='G7')]
+        G7data = gdpdata[(gdpdata['MEASURE']=='VIXOBSA') 
+                & (gdpdata['Country']=='G7')]
+        
         G7data=G7data[['Period','Value']]
 
 goes from Q1-2007 Q4-2021 to looks like
@@ -60,7 +62,6 @@ add a year column: easier to use than q1-2007
 
         def formyr(x,data):
             d = data['Period'].values[x]
-            #print(data['Period'])
             y= int(d[-4:])+int(d[1:2])*0.25 - 2007
             return y   
 
@@ -75,15 +76,20 @@ now make the model and overlay on the scatter diagram
 
         x = G7data['yr']
         y = G7data['Value']
-        slope, intercept, r, p, std_err = stats.linregress(x, y)
 
-        def f(x):
-        return slope * x + intercept
+        m = stats.linregress(x, y)
 
-        G7data.insert(len(G7data.columns),'r',list(map(f, x)))
+        t = [m.slope * i + m.intercept for i in x]
+        G7data.insert(len(G7data.columns),'r',t)
 
-        ax = G7data.plot.scatter(x='Period',y='Value')
-        G7data.plot.line(x='Period',y='r', color='red', ax=ax, figsize = (16,8), rot=90)
+        ax = G7data.plot.scatter(x='Period',
+                                y='Value')
+        G7data.plot.line(x='Period',
+                        y='r', 
+                        color='red', 
+                        ax=ax, 
+                        figsize = (16,8), 
+                        rot=90)
 
 ![](images/g7scatterwithtrend1.png)
 
@@ -95,15 +101,21 @@ try a model over the intervening years year 2 to year -8
 
         x = G7data2009['yr']
         y = G7data2009['Value']
-        slope, intercept, r, p, std_err = stats.linregress(x, y)
 
-        def f(x):
-        return slope * x + intercept
+        m = stats.linregress(x, y)
 
-        G7data.insert(len(G7data.columns),'r2',list(map(f, G7data['yr'])))
+        t = [m.slope * i + m.intercept for i in G7data['yr']]
 
-        ax = G7data.plot.scatter(x='Period',y='Value')
-        ax = G7data.plot.line(x='Period',y='r2', color='red', ax=ax, figsize = (16,8), rot=90)
+        G7data.insert(len(G7data.columns),'r2',t)
+
+        ax = G7data.plot.scatter(x='Period',
+                                y='Value')
+        ax = G7data.plot.line(x='Period',
+                        y='r2', 
+                        color='red', 
+                        ax=ax, 
+                        figsize = (16,8), 
+                        rot=90)
 
 trained on intervening years, the model does a pretty good job of predicting up Q1 2021 
 
