@@ -6,14 +6,14 @@
 
 ### Finding a trend
 
-- import libraries
+import libraries
 
         import pandas as pd
         from scipy import stats
 
-- download weather data
-- create a df that contains the Tmax from 1957 to 2018 and draw a scatter plot
-- can't see any trend
+download weather data
+create a df that contains the Tmax from 1957 to 2018 and draw a scatter plot
+can't see any trend
 
         weather = pd.read_csv('https://raw.githubusercontent.com/alanjones2/dataviz/master/londonweather.csv')
         july = weather.query('Month == 7')[['Year','Tmax']]
@@ -21,9 +21,9 @@
 
 ![](images/tmax-scatter.png)
 
-- try to fit a regression line
-- build a model and create a trend line
-- plot the trend line on top of the scatter plot
+try to fit a regression line
+build a model and create a trend line
+plot the trend line on top of the scatter plot
 
         x = july['Year']
         y = july['Tmax']
@@ -40,23 +40,23 @@
 
 ![](images/scatterwithtrendline.png)
 
-- now can clearly see an upwards trend 
+now can clearly see an upwards trend 
 
 ![](images/df-trendline.png)
 
 ### Predicting values
 
-- get oecd data and filter it to get gpd volume data fro the G7
+get oecd data and filter it to get gpd volume data fro the G7
 
         gdpdata = pd.read_csv('https://github.com/alanjones2/stGDPG7/raw/main/QNA_26022022111050612.csv')
         G7data = gdpdata[(gdpdata['MEASURE']=='VIXOBSA') & (gdpdata['Country']=='G7')]
         G7data=G7data[['Period','Value']]
 
-- goes from Q1-2007 Q4-2021 to looks like
+goes from Q1-2007 Q4-2021 to looks like
 
 ![](images/g7df.png)
 
-- add a year column: easier to use than q1-2007
+add a year column: easier to use than q1-2007
 
         def formyr(x,data):
             d = data['Period'].values[x]
@@ -67,11 +67,11 @@
         yr=[formyr(x,G7data) for x in range(len(G7data)) ]
         G7data['yr'] = yr
 
-- now looks like
+now looks like
 
 ![](images/g7dfwithyr.png)
 
-- now make the model and overlay on the scatter diagram
+now make the model and overlay on the scatter diagram
 
         x = G7data['yr']
         y = G7data['Value']
@@ -87,8 +87,8 @@
 
 ![](images/g7scatterwithtrend1.png)
 
-- trendline is not very good as a predictor because of the major events of 2008 and 2020
-- try a model over the intervening years year 2 to year -8
+trendline is not very good as a predictor because of the major events of 2008 and 2020
+try a model over the intervening years year 2 to year -8
 
         G7data2009 = G7data[(G7data['yr']>2) & (G7data['yr']<=8)]
 
@@ -105,8 +105,8 @@
         ax = G7data.plot.scatter(x='Period',y='Value')
         ax = G7data.plot.line(x='Period',y='r2', color='red', ax=ax, figsize = (16,8), rot=90)
 
-- trained on intervening years, the model does a pretty good job of predicting up Q1 2021 
+trained on intervening years, the model does a pretty good job of predicting up Q1 2021 
 
-- 2 things:
+2 things:
     - the model is useful for predicting under normal circumstances
     - but random events happen in real life that cannot be predictded
