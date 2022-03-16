@@ -119,6 +119,8 @@ try a model over the intervening years year 2 to year -8
 
 trained on intervening years, the model does a pretty good job of predicting up Q1 2021 
 
+![](images/g7scatterwithtrend2.png)
+
 2 things:
     - the model is useful for predicting under normal circumstances
     - but random events happen in real life that cannot be predictded
